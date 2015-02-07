@@ -75,5 +75,5 @@ plot(strptime(paste(data$Date, data$Time),  format = "%d/%m/%Y %H:%M:%S"),data$G
 
 
 ##save plot
-dev.copy(png, file = "plot4.png",width=480,height=480)
+dev.copy(png, file = "plot4.png",width=580,height=480)
 dev.off()

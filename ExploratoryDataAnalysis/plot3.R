@@ -47,5 +47,5 @@ legend = c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"))
 
 
 ##save plot
-dev.copy(png, file = "plot3.png",width=480,height=480)
+dev.copy(png, file = "plot3.png",width=580,height=480)
 dev.off()
