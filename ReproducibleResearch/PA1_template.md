@@ -5,12 +5,6 @@ date: "August 15, 2015"
 output: html_document
 ---
 
-```
-## Loading required package: gsubfn
-## Loading required package: proto
-## Loading required package: RSQLite
-## Loading required package: DBI
-```
 
 
 # Loading and preprocessing the data
