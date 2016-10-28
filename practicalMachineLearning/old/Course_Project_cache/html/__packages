@@ -1,0 +1,14 @@
+base
+lattice
+ggplot2
+caret
+rattle
+repmis
+randomForest
+rpart
+rpart.plot
+proto
+gsubfn
+DBI
+RSQLite
+sqldf

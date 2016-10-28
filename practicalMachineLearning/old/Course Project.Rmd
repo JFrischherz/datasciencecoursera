@@ -1,0 +1,105 @@
+---
+title: "Practical Machine Learning - Course Project"
+author: "Joscha Frischherz"
+date: "October 21, 2016"
+output: html_document
+---
+
+
+#Preparation
+## Load required packages
+
+```{r, echo = TRUE, cache=TRUE}
+library(ggplot2)
+library(lattice)
+library(gsubfn)
+library(proto)
+library(caret)
+library(rattle)
+library(repmis)
+library(randomForest)
+library(rpart)
+library(rpart.plot)
+library(tcltk)
+library(sqldf)
+
+```
+
+## Data load
+```{r, echo = TRUE, cache=TRUE}
+
+train <- read.csv("~/datasciencecoursera/practicalMachineLearning/pml-training.csv", na.strings = c("NA",""))
+test <-read.csv("~/datasciencecoursera/practicalMachineLearning/pml-testing.csv", na.strings = c("NA",""))
+
+```
+
+## Exploratory Data Analysis
+
+```{r, echo = TRUE, cache=TRUE}
+dim(train)
+dim(test)
+```
+
+The dataset contain 160 variables. The training data set contains 19,622 records while the testing data set contains 20 records to apply the prediction models against.
+
+##Data Cleaning 
+
+```{r, echo = TRUE, cache=TRUE}
+train <- train[, colSums(is.na(train))==0]
+test <- test[, colSums(is.na(test)) ==0]
+```
+
+Furthermore we delete the first seven variables as they do not have any impact on the 
+
+```{r, echo = TRUE, cache=TRUE}
+train <- train[, -c(1:7)]
+test <- test[,-c(1:7)]
+```
+
+#Model testing 
+Ideally we would prefer to apply a Random Forrest Algorithm However the computation power required is not available therefore we settle for a Decision Tree Algorithm approach. 
+
+##Data splitting
+First we split our training data set into two partion to evaluate our model(s). For this purpose we use 70% of the data to train the model and 30% to assess the accuracy.
+
+```{r, echo = TRUE, cache=TRUE}
+set.seed(123)
+trainData <- createDataPartition(train$classe, p = 0.7, list = FALSE)
+trainModel <- train[trainData,]
+testModel <- train[-trainData,]
+```
+
+
+##Prediction Algorithm
+
+mod_rf <- train(classe~., data=trainModel , method = "rf")
+saveRDS(mod_rf, "rfmodel.RDS")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+We note that a number of variable contain missing records ("NA"), these require to be cleaned in order to improve the model effectiveness.
+```{r, echo = TRUE, cache=TRUE}
+data_na <- sapply(train, function(x) {sum(is.na(x))})
+table(data_na)
+```
+
+We identify 67 columns with no records, which we will exclude for our prediction modelling.
+
+```{r, echo = TRUE, cache=TRUE}
+ex_col <- names(data_na[data_na== 19216])
+train <- train[, !names(train) %in% ex_col]
+```
+
