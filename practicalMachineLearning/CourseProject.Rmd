@@ -1,0 +1,89 @@
+---
+title: "Practical Machine Learning - Course Project"
+author: "Joscha Frischherz"
+date: "October 27, 2016"
+output: html_document
+---
+
+#Preparation
+
+## Load requred packages
+Firstly we prepare the environment with the required packages.
+```{r, echo = TRUE, cache=TRUE}
+library(ggplot2)
+library(lattice)
+library(caret)
+library(rattle)
+library(randomForest)
+```
+
+##Data load
+Secondly, we load the training dataset and the testing data set on which the models are applied to make the corresponding classe predictions.
+```{r, echo = TRUE, cache=TRUE}
+train <- read.csv("~/R/Coursera/MachineLearning/pml-training.csv", na.strings = c("NA", ""))
+test <- read.csv("~/R/Coursera/MachineLearning/pml-testing.csv", na.strings = c("NA", ""))
+```
+Thirdly we review the datset.
+```{r, echo = TRUE, cache=TRUE}
+dim(test)
+dim(train)
+```
+The dataset contains 160 variables. The training data set contains 19,622 records while the testing dataset containst 20 recors to apply the prediction model against.
+
+##Data cleaning
+The "NA" records as well as the first seven columns which are not relevant for predictions need to be removed.
+```{r, echo = TRUE, cache=TRUE}
+train <- train[,colSums(is.na(train))==0]
+test <- test[,colSums(is.na(train))==0]
+
+
+train <- train[,-c(1:7)]
+test <- test[,-c(1:7)]
+```
+
+#Model selection
+While computational resource intentsive the Algorithm "Random Forest" is considered a very effective approach for prediction, therefore this will be our approach.
+To start, we split our training data set into two partions. 70% of the data will serve for training the model while we use 30% to evaluate the moel against.
+
+```{r, echo = TRUE, cache=TRUE}
+set.seed(123)
+trainData <- createDataPartition(train$classe, p = 0.7, list = FALSE)
+trainModel <- train[trainData,]
+testModel <- train[-trainData,]
+
+```
+
+
+Then we train the model on the specified training dataset. The determined model is then evaluated against the testing dataset.
+
+```{r, echo = TRUE, cache=TRUE}
+mod_rf <- train(classe~., data=trainModel, method = "rf")
+
+mean(predict(mod_rf, testModel) == testModel$classe) * 100
+```
+
+The output indicates that the model is 99.30% accurate - we therefore are able to use the model to predict the 20 test cases effectively.
+```{r, echo = TRUE, cache=TRUE}
+predict(mod_rf, test)
+```
+
+While the standard model predicts the test cases correctly, this is very ressource intensive. An alternative approach is to run (test) a number of random forest models on smaler data sets which will reduce the ressources required. 
+
+#Cross validation approach
+An alternative to just run the Random Forest accross the whole dataset is using Cross Validation. For this we split the data set into 5 folds. and fixt the parameters of the algorithm
+Then we train the model using the 5 fold training control.
+
+```{r, echo = TRUE, cache=TRUE}
+train_control <- trainControl(method = "cv", number=5)
+mod_rf_cv <- train(classe~., data = trainModel, trControl = train_control)
+mean(predict(mod_rf_cv, testModel) == testModel$classe) * 100
+```
+
+While still being considered accurate it is slightly less accurate (99.25%) compared to the Random Forest over the whole training data set.
+
+#Out of sample error
+Using the original model withoug cross validation we have an$ out of sample error of 0.697% (100-99.303).
+For the cross validated model we have an out of sample error of 0.747 (100 - 99.252).
+
+#Conclusion
+The standard Random Forest algorithm is effective in predicting the test cases while being ressource intensive. Alternatively we can develop a nearly as accurate model for with the Random Forest using cross validation which is less ressource intensive.
