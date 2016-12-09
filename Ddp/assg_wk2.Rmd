@@ -16,4 +16,3 @@ m =  addMarkers(m,lat=47.0349, lng=8.5806, popup= "Where I grew up")
 m
 
 ```
-
