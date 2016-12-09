@@ -1,0 +1,19 @@
+---
+title: "Programming Assignment 1 (Ddp)"
+author: "Joscha Frischherz"
+date: "December 9, 2016"
+output: html_document
+---
+
+
+
+```{r, echo=FALSE, warning=FALSE}
+library(leaflet)
+
+m = leaflet()
+m =  addTiles(m)
+m =  addMarkers(m,lat=47.0349, lng=8.5806, popup= "Where I grew up")
+m
+
+```
+
