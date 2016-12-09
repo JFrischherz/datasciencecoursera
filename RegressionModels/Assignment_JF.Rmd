@@ -1,0 +1,183 @@
+---
+title: "Project - Impact of transmission type on fuel usage"
+author: "Joscha Frischherz"
+date: "March 12, 2016"
+output: pdf_document
+---
+```{r, echo=FALSE, cache=TRUE}
+library(datasets)
+library(bestglm)
+library(stats)
+library(graphics)
+
+data(mtcars)
+```
+
+##Executive Summary
+The following analysis looks at car data variables and their impact on "miles per gallon". 
+We looked at whether an automatic or manual transmission is better and tried to quantify that difference.
+Our analysis shows that a manual transmission uses less fuel and a car (disregarding other factors) should be able to drive 7.25 miles further if its transmission is manual as opposed to automated. Having said that this quantification is a statistical value only, obviously many other factors would influence the exact fuel consumption of a car. But we are able to confidentially state that a manual transmission is better with regards to fuel consumption.
+
+
+##Analysis
+###Variable Selection
+To start we will identify variables that are strongly correlated to "miles per gallon" (mpg). Refer to Appendix for correlation workings. 
+As we are interested in transmission (am) impact on mpg, we use this variable's absolute correlation as lower benchmark for our initial variable selection.
+Therefore we are interested in analysing the impact by:
+
+- Number of cylinders (cyl)	 
+- Displacement (disp)
+- Gross horsepower (hp)
+- Rear axle ratio (drat)
+- Weight (1000 lbs) (wt)
+- V/S (vs)
+- Transmission (0 = automatic, 1 = manual) (am)
+
+
+
+
+###Model Analysis
+We analyse three models. The first two are multi linear regressions of correlated variables, the first one including "transmission type", while the second one exludes it. We note that some more influential variables start to cristal out, such as "weight" and "gross horse power", while "transmission type" does not seem to have an overarching influence considering the other variables. Refer to the models in the appendix.
+
+Model of all correlated variables (Adjusted R-square)
+```{r, echo=FALSE, cache=TRUE}
+fit1 <- lm(mpg ~ cyl + disp + hp + drat + wt + vs + am ,mtcars)
+summary(fit1)$adj.r.squared
+```
+
+
+Model of all correlated variables exclusive transmission (Adjusted R-square)
+```{r, echo=FALSE, cache=TRUE}
+fit2 <- lm(mpg ~ cyl + disp + hp + drat + wt + vs ,mtcars)
+summary(fit2)$adj.r.squared
+```
+
+We note that most of the variance (>81%) is explained by the above two models. Having said that statistical significant factors are only sporadically identified.
+
+Now performing a simple linear rgreassion only on transmission type we identify that "transmission type" does have a significant influence on "miles per gallon".
+
+Model of transmission variable (Adjusted R-square)
+```{r, echo=FALSE, cache=TRUE}
+fit3 <- lm(mpg ~ am ,mtcars)
+summary(fit3)$adj.r.squared
+```
+
+
+
+###Comparing Models
+```{r, echo=TRUE, cache=TRUE}
+anova(fit1,fit2,fit3)
+```
+
+Comparing the three models now, we understand that the simple linear regression provides us with the best statistical information on a variable impacting "miles per gallon". Having said that we read from the above more generic models, that other factors would likely bee impactful as well and statistical significant if analysed in isolation. 
+This observation is substantiated by the Adjusted R-squared of 33.85%, which basically outlines that only that portion of the regression variance can be explained by the bespoke model. Hence the other factors may explain the rest.
+
+
+###Statistical Inference
+We confirm the above via statistical inference. 
+```{r, echo=TRUE, cache=TRUE}
+t.test(mpg ~ am, data = mtcars)$p.val
+```
+Based on the t-test we obtain a p-value of 0.001374 which allows us to reject the Null hypothesis that automated and manual transamission are indifferent with relation to "miles per gallon".
+
+##Conclsion
+We identified that "transmission type" clearly does have a statistical influence on "miles per gallon" based on the analysed data set. Having said that we also noted that it is not the sole influencer and many other variables also have an influence on "mile per gallon".
+We can conclude however that an manual transmission uses less fuel than an automated one. This observation is also supported by the box plot in the Appendix. Based on the simple linear regressio, we can quantify that a manual transmission car may allow a car to drive 7.25 miles more on a gallon of petrol, disregarding all other variables.
+The key limitation identified is that the bespoke simple linear regression model only explains 33.85% of variances.
+
+
+#Appendix
+###R code applied for loading of data and packages
+
+**data load**
+Procedure to load data
+library(datasets)
+
+data(mtcars)
+
+
+Additional tools
+
+library(stats)
+
+library(graphics)
+
+
+
+
+## Data exploration
+Refer to help (?mtcars) for additional information of the data set. The help file outlines the variables as follows:
+
+- [, 1]	 mpg	 Miles/(US) gallon
+- [, 2]	 cyl	 Number of cylinders
+- [, 3]	 disp	 Displacement (cu.in.)
+- [, 4]	 hp	 Gross horsepower
+- [, 5]	 drat	 Rear axle ratio
+- [, 6]	 wt	 Weight (1000 lbs)
+- [, 7]	 qsec	 1/4 mile time
+- [, 8]	 vs	 V/S
+- [, 9]	 am	 Transmission (0 = automatic, 1 = manual)
+- [,10]	 gear	 Number of forward gears
+- [,11]	 carb	 Number of carburetors
+
+###Display top rows to understand data content and review data summary
+
+```{r, echo=TRUE, cache=TRUE}
+head(mtcars)
+```
+
+
+
+
+##Pairs plot of "miles per gallon" and "all other variables"
+```{r, echo=TRUE, cache=TRUE}
+pairs(mtcars[c('mpg','cyl','disp','hp','drat','wt','vs','am')], panel=panel.smooth,
+      main='Fig1: mpg vs. parameters with stronger correlation', col = 3)
+```
+
+
+
+
+###Model analysis details
+####Correlated factors
+```{r, echo=TRUE, cache=TRUE}
+sapply(mtcars,function(x) cor(mtcars$mpg,x))
+```
+
+####Model of all correlated variables
+```{r, echo=TRUE, cache=TRUE}
+fit1 <- lm(mpg ~ cyl + disp + hp + drat + wt + vs + am ,mtcars)
+summary(fit1)$coef
+summary(fit1)$adj.r.squared
+```
+
+
+####Model of all correlated variables exclusive transmission
+```{r, echo=TRUE, cache=TRUE}
+fit2 <- lm(mpg ~ cyl + disp + hp + drat + wt + vs ,mtcars)
+summary(fit2)$coef
+summary(fit2)$adj.r.squared
+```
+
+###Model of transmission variable
+```{r, echo=TRUE, cache=TRUE}
+fit3 <- lm(mpg ~ am ,mtcars)
+summary(fit3)$coef
+summary(fit3)$adj.r.squared
+```
+
+
+##Boxplot showing impact of "transmission type" on "miles per gallon"
+The below graph helps us to understand the impact of the "transmission type" on "miles per gallon."
+```{r, echo=TRUE, cache=TRUE}
+boxplot(mpg ~ am, data = mtcars, col = (c("green","blue")), ylab = "Miles Per Gallon", xlab = "Transmission Type")
+```
+
+##Residual plots
+The below residual plots outline a bit of a curve in residuals vs. fitted but for the purpose of the analysis we accept the data as normally distributed.
+```{r, echo=TRUE, cache=TRUE}
+par(mfrow=c(2,2))    
+plot(fit1)
+```
+
+
