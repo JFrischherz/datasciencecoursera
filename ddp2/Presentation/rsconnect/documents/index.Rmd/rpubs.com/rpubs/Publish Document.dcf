@@ -1,0 +1,8 @@
+name: Publish Document
+title:
+account: rpubs
+server: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/235757/ddfb778063c74abc98fd7561e9ebbe3e
+bundleId: https://api.rpubs.com/api/v1/document/235757/ddfb778063c74abc98fd7561e9ebbe3e
+url: http://rpubs.com/jfrischherz/235757
+when: 1481892358.806

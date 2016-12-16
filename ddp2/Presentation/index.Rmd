@@ -1,0 +1,40 @@
+---
+title: "Week 3 assignment"
+author: "Joscha Frischherz"
+highlighter: highlight.js
+hitheme: tomorrow
+job: Data Science Specialisation = Ddp
+knit: slidify::knit2slides
+mode: selfcontained
+subtitle: Plot.ly
+framework: io2012
+widgets: []
+---
+
+
+
+ 
+
+## Visualisation = Plotly
+
+16/12/2016
+
+
+
+```{r, echo=FALSE, warning=FALSE, plotly=TRUE}
+
+library(webshot)
+library(ggplot2)
+library(plotly)
+
+#Sys.setenv("plotly_username"="jfrischherz")
+#Sys.setenv("plotly_api_key"="hYb47zezeSX0kCdT2ZGp")
+
+g=ggplot(mtcars, aes(x=wt, y=mpg))
+g=g+geom_point(aes(color=factor(cyl)))
+```
+
+```{r, echo=TRUE, warning=FALSE, plotly=TRUE}
+ggplotly(g)
+##py<- plotly()
+```
